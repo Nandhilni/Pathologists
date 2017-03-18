@@ -1,6 +1,8 @@
 'use strict'
 var express = require('express'), app = express();
 
+
+  
 var CartDetails = require('./js/cartDetails');
 
 app.use(express.static(__dirname + '/templates/'));
@@ -17,6 +19,13 @@ app.get('/authentication', function auth (req, res) {
   } else {
     return res.status(500).send('Invalid Credentials');
   }
+});
+app.get('/veg_display', function (req, res) { 
+   res.sendfile('view/fooddisplay.html');
+});
+
+app.get('/products_display', function (req, res) { 
+   res.sendfile('view/products_display.html');
 });
 app.get('/dashboard', function (req, res) { 
    res.sendfile('view/dashboard.html');
@@ -36,5 +45,5 @@ app.get('/gadgets_display', function(req, res)
 {
 	res.sendfile('view/gadgetsDisplay.html');
 })
-app.listen(5000);
+app.listen(4000);
 console.log('Login/Signup example');
