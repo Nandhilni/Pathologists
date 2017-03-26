@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link href="css/myStyle.css" rel="stylesheet">
     <script>
-        $(document).ready(function(){
-     // Add smooth scrolling to all links in navbar + footer link
+        $(document).ready(function(){     
         $('#login-form-link').click(function(e) {
         $("#login-form").delay(100).fadeIn(100);
         $("#register-form").fadeOut(100);
@@ -24,48 +23,121 @@
         e.preventDefault();
     });
    });
-    </script>
-    
-    <script>
-        function printOrNot()
-        {
-            if (1) {                
-                     alert("entered");
-                  
-                window.location.href = "http://www.google.com";
-            }
-            else {
-                alert("Failed");
-            }
-            return false;
-        };
-    </script>
-    <script>
-             function handleLogin(){
-          event.preventDefault();
-            var username = document.getElementById("username").value;
-            var password = document.getElementById("password").value;
-
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
-                if (xmlhttp.status == 200) {
-                  window.location.href = "http://localhost:4000/dashboard";
+    </script>  
+    <script type="text/javascript">
+    function encrypt(pass)
+    {               
+         return $.ajax({
+              url: "/encryptPassword",
+              data:{
+                password:pass
+              },             
+              success:function(enpwd)
+              {            
+                //console.log(data);
+              },
+              error:function()
+              {
               }
-           else if (xmlhttp.status == 500) {
-            console.log(xmlhttp);
-              document.getElementById("errorMessage").innerHTML = xmlhttp.responseText;
-           }
-           else {
-               alert('something else other was returned');
-           }
-        }
-    };
-
-    xmlhttp.open("GET", "/authentication?username="+username+"&password="+password, true);
-    xmlhttp.send();
-  }
+        });              
+    }
+    </script>  
+    <script type="text/javascript">
+        function handleRegister(){                          
+        username=$("#newusername").val();
+        email=$("#email").val();        
+        pass=$("#fresh").val();
+        $.ajax({
+              url: "/encryptPassword",
+              data:{
+                password:pass
+              },
+              success:function(data)
+              { 
+                pass=data;
+                console.log('encrypted_password is'+pass);   
+                var JSONObject = {
+                    'email':email,
+                    'encrypted_password':pass,
+                    'username':username
+                };
+                $.ajax({
+                                    type: "POST",
+                                    contentType: "application/json",
+                                    url: "http://localhost:3000/users",    
+                                    data:JSON.stringify(JSONObject), 
+                                    success:function(data){
+                                        console.log(data);
+                                    },
+                                    error: function(data) {alert("ajax error");console.log(data);},
+                                    dataType: 'json'
+                });
+            }
+        });        
+    }
     </script>
+    <script type="text/javascript">
+    function handleLogin()
+    {   console.log('entered into functino');
+        var username = document.getElementById("emailid").value;
+        alert(username);
+        var password = document.getElementById("password").value; 
+        alert(password);       
+
+        $.ajax({ 
+                    type: "GET",
+                    contentType: 'application/json',
+                    url: "http://localhost:3000/users/getUserByEmail?email="+username,
+                   success: function(data){  
+                           $.ajax({
+                              url: "/encryptPassword",
+                              data:{
+                                password:password
+                              },
+                              success:function(encryptedpassword)
+                              {
+                                if(encryptedpassword==data.encrypted_password)
+                                {
+                                  
+                                  window.location.href = "http://localhost:4000/dashboard";
+                                }
+                              }
+                          });                          
+                  },
+                    error:function(data)
+                    {
+                        alert(data);
+                    }
+                });
+    }
+    </script>
+  //   <script>
+  //            function handleLogin(){
+  //         event.preventDefault();
+  //           var username = document.getElementById("username").value;
+  //           var password = document.getElementById("password").value;
+  //           var email=document.getElementById("email").value;
+
+  //           var xmlhttp = new XMLHttpRequest();
+  //           xmlhttp.onreadystatechange = function() {
+  //           if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
+  //               if (xmlhttp.status == 200) {
+  //                 window.location.href = "http://localhost:4000/dashboard";
+  //             }
+  //          else if (xmlhttp.status == 500) {
+  //           console.log(xmlhttp);
+  //             document.getElementById("errorMessage").innerHTML = xmlhttp.responseText;
+  //          }
+  //          else {
+  //              alert('Authentication Failed');
+  //          }
+  //       }
+  //   };
+
+  //   xmlhttp.open("GET", "/authentication?username="+username+"&password="+password+"&email="+email+"&confirm-password="+confirm-password, true);
+  //   xmlhttp.send();
+  // }
+  //   </script>
     </head>
 <body>
 
@@ -88,9 +160,13 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-lg-12" id="col_login">
-                                <form id="login-form" action="" method="get" role="form" style="display: block;">
-                                    <div class="form-group">
-                                        <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                <!-- <form id="login-form" action="" method="get" role="form" style="display: block;">
+
+                                 -->
+
+                                 <div id="login-form"  style="display: block;">
+                                     <div class="form-group">
+                                        <input  tabindex="1" class="form-control"  value=""placeholder=" enter your mail id" type="email" name="emailid" id="emailid">
                                     </div>
                                     <div class="form-group">
                                         <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
@@ -102,16 +178,19 @@
                                             </div>
                                         </div>
                                     </div>
-                                </form>
-                                <form id="register-form" action=""  onsubmit="return printOrNot();" method="get" role="form" style="display: none;">
+                                </div>
+                                <!-- </form> -->
+                               <!--  <form id="register-form" action=""  method="get" role="form" style="display: none;"> -->
+                               
+                               <div id="register-form" style="display: none;">
                                     <div class="form-group">
-                                        <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                        <input type="text" name="username" tabindex="1" class="form-control" placeholder="Username" value=""     id="newusername">
                                     </div>
                                     <div class="form-group">
                                         <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email Address" value="">
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
+                                        <input type="password" name="password" tabindex="2" class="form-control" placeholder="Password" id="fresh">
                                     </div>
                                     <div class="form-group">
                                         <input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
@@ -119,11 +198,12 @@
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-sm-6 col-sm-offset-3">
-                                                <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now">                                               
+                                                <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Register Now" id="submit" onclick="handleRegister()">                                        
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+                                <!-- </form> -->
+                            </div>
                             </div>
                         </div>
                     </div>

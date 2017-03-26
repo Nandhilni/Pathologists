@@ -37,7 +37,7 @@
 										'success': function (subCategory) {
 											for(var i=0;i<subCategory.length;i++){									
 											var aTag = document.createElement('a');
-											aTag.setAttribute('href',subCategory[i].redirect_url);		       
+											aTag.setAttribute('href',subCategory[i].redirect_url+"?id="+subCategory[i].id);		       
 											var createText = document.createTextNode(subCategory[i].name);
 											console.log(subCategory[i].name);								
 											aTag.appendChild(createText);

@@ -1,40 +1,30 @@
 'use strict'
-var express = require('express'), app = express();
-
-
-  
+var express = require('express');
+var session = require('express-session');
+var app = express();
 var CartDetails = require('./js/cartDetails');
-
 app.use(express.static(__dirname + '/templates/'));
-app.get('/', function (req, res) {
+app.get('/', function (req, res) { 
 	res.sendfile('view/CanPro.html');
-});
-app.get('/authentication', function auth (req, res) {
-  var username = req.query.username, password = req.query.password;
-  if (username === '' || password === '') {
-    return res.status(500).send('Enter username and password');
-  }
-  if (username === 'pathologist' && password === 'pathologist') {
-    return res.status(200).send(req.query.username + 'Authenticated');
-  } else {
-    return res.status(500).send('Invalid Credentials');
-  }
 });
 app.get('/veg_display', function (req, res) { 
    res.sendfile('view/fooddisplay.html');
 });
-
+app.get('/cart_items', function (req, res) { 
+   res.sendfile('view/CartItemsDetails.html');
+});
 app.get('/products_display', function (req, res) { 
    res.sendfile('view/products_display.html');
 });
-app.get('/dashboard', function (req, res) { 
+
+app.get('/encryptPassword', CartDetails.encrypt);
+
+app.get('/dashboard', function (req, res) {   
    res.sendfile('view/dashboard.html');
 });
 app.get('/display', function (req, res) {
 	res.sendfile('view/homepage.html');
 });
-app.get('/addElement', CartDetails.addElement);
-app.get('/displayCart', CartDetails.displayCart);
 app.get('/food_display', function (req, res) {
 	res.sendfile('view/fooddisplay.html');
 });
