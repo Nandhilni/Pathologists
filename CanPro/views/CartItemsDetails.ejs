@@ -6,6 +6,10 @@
   		<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script> 
 		<script type="text/javascript">
 			window.onload = function displayCartDetails() {
+				// var buttonTag = document.createElement('button');
+				// buttonTag.setAttribute('id',"user_id");
+				// buttonTag.setAttribute('value',"<%=user_id%>");
+				// button.setAttribute('style',"display: none;");
 				$.ajax({ 
 					type: "GET",
 					contentType: 'application/json',
@@ -24,7 +28,7 @@
 							childDivTag.appendChild(childText);
 							childDivTag.appendChild(imgTag);
 							var button = document.createElement('button');
-							button.setAttribute('onClick',"deleteItemFromTable("+data[i].id+")");
+							button.setAttribute('onClick',"deleteItemFromTable("+data[i].id+","+data[i].product_id+")");
 							var textNode=document.createTextNode('Remove Item from Cart');
 							button.appendChild(textNode);
 							childDivTag.appendChild(button);
@@ -46,44 +50,82 @@
 			}
 		</script>
 		<script type="text/javascript">
-			function deleteItemFromTable(id)
-			{		
-					$.ajax({ 						
-				    type: "DELETE",
+			function deleteItemFromTable(id,product_id)
+			{	console.log(product_id)	
+				$.ajax({ 						
+				    type: "PUT",
 					contentType: 'application/json',
-					url:"http://localhost:3000/cart_items/"+id,					
+					url:"http://localhost:3000/products/"+product_id+"/update_quantity",				
 					success: function(data){
-						location.reload();					
+						    console.log("updated quantity")
+							$.ajax({ 						
+						    type: "DELETE",
+							contentType: 'application/json',
+							url:"http://localhost:3000/cart_items/"+id,					
+							success: function(data){
+								location.reload();					
+							}
+							})
 					}
-					})
+				})
 			}			
 		</script>
-		 <script type="text/javascript">
+		 <script type="text/javascript">		 
 			function confirmOrder(data)
-			{
-				console.log(data);
+			{   
 				var sum=0;
 				for(var i=0;i<data.length;i++)
 				{  
 					var price=data[i].price.split(".")
 					sum+=parseInt(price[1]);
-				}
-				var num = Math.floor(Math.random() * 10 + 1);
-				var JSONObject={
-					"user_id":5,
-					"total":sum,
-					"order_number":num
-				}
+				}	
+				var userID=document.getElementById('user_id').value;
 				$.ajax({ 						
-				    type: "POST",
+				    type: "GET",
 					contentType: 'application/json',
-					url:"http://localhost:3000/orders",
-					data:JSON.stringify(JSONObject),
+					url:"http://localhost:3000/money_bags/getBagId?user_id="+userID,
 					success: function(data1){
-					console.log(data1);	
-					bulkInsertItems(data1.id,data);		
+						if(sum<=data1.available_credit)
+						{
+							var updateInfo = {
+								'available_credit':data1.available_credit - sum,
+								'expenses' : data1.expenses+sum
+							};
+							$.ajax({ 						
+							    type: "PUT",
+								contentType: 'application/json',
+								url:"http://localhost:3000/money_bags/"+data1.id,
+								data:JSON.stringify(updateInfo),
+								success: function(data2){
+									var num = Math.floor(Math.random() * 10 + 1);
+									var JSONObject={
+										"user_id":userID,
+										"total":sum,
+										"order_number":num
+									}
+									$.ajax({ 						
+									    type: "POST",
+										contentType: 'application/json',
+										url:"http://localhost:3000/orders",
+										data:JSON.stringify(JSONObject),
+										success: function(data3){
+											console.log(data3);	
+											bulkInsertItems(data3.id,data);		
+										}
+									});
+								}
+							});
+						}
+						else
+						{
+							toastr.error('out of cash');
+						}	
+					},
+					error : function(errorinfo)
+					{
+						console.log(errorinfo);
 					}
-				})
+				});												   					
 			}
 			function bulkInsertItems(id,data)
 			{    
@@ -104,9 +146,9 @@
 					data:JSON.stringify(JSONObject),
 					success: function(data){
 					redirectTime = "10";
-					redirectURL = "http://localhost:4000/dashboard";
+					redirectURL = "/dashboard";
 					toastr.info('Processing...', { fadeAway:100 });
-					toastr.success('You have placed your order successfully!!!');					
+					toastr.success('You have placed your order successfully!!!');			
 					setTimeout("location.href = redirectURL;",redirectTime);				
 					removeCartItems();
 					
@@ -127,5 +169,6 @@
 		 </script>
 	</head>
 	<body>
+		<button id='user_id' value=<%=user_id%> style="display: none;">
 	</body>
-</html>
+</html>			

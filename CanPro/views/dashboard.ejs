@@ -33,20 +33,26 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-   	    <script>
-	    $(document).ready(function(){
- 		   		console.log($(this).val());
-        		$.ajax({
-        			url: "/displayCart",
-        			success: function(result){
-            			console.log(result);
-            			$('#cartDetails').text("");
-            			for(var i=0;i<result.length;i++)
-            				$('#cartDetails').append(result[i]+"<br/>");
-        			}
-        		});
-		});
-		</script>
+  //  	    <script>
+	 //    $(document).ready(function(){
+ 	// 	   		console.log($(this).val());
+  //       		$.ajax({
+  //       			url: "/displayCart",
+  //       			success: function(result){
+  //           			console.log(result);
+  //           			$('#cartDetails').text("");
+  //           			for(var i=0;i<result.length;i++)
+  //           				$('#cartDetails').append(result[i]+"<br/>");
+  //       			}
+  //       		});
+		// });
+		// </script>
+        <script type="text/javascript">
+        window.onload = function testing(req,res) {
+            console.log(req);
+            console.log(res);
+        };
+        </script>
 </head>
 
 <body id="page-top" class="index">
@@ -75,6 +81,10 @@
                             <a href="/cart_items"> YourCart</a>                           
                         </li>
                         <li>
+                            <a href="/logout">Log Out 
+                            </a>
+                        </li>
+                        <li>
                             <a class="page-scroll" href="#contact">Contact</a>
                         </li>
                     </ul>
@@ -93,6 +103,7 @@
         <div class="container">
             <div class="intro-text">
                 <div class="intro-lead-in">Keep Calm and Shop ON...</div>
+                <div><%=user_id%></div>
                 <div class="intro-heading">Welcome...</div>
                 <a href="#services" class="page-scroll btn btn-xl">Shop More</a>
             </div>

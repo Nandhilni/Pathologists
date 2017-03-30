@@ -9,7 +9,7 @@ function addElement (req, res) {
 	return res.status(200).send(selectedItems);
 }
 function displayCart(req,res)
-{
+{	
 	return res.status(200).send(selectedItems);
 }
 function encrypt(req, res)
