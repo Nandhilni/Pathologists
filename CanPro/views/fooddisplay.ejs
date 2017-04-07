@@ -66,7 +66,8 @@
 		</script>
 		<script type="text/javascript">		
 			function buttonclickevent(id)
-			{ 					  		        		        		        					
+			{ 	
+			    var userID=document.getElementById('user_id').value;				  		 
  		   		$.ajax({ 
 	  				type: "GET",
 				    contentType: 'application/json',
@@ -88,7 +89,8 @@
 							"product_id":data.id,
 							"product_name":data.name,
 							"price":data.price,
-							"image_url":data.image_url            
+							"image_url":data.image_url,
+							"user_id":userID         
 						    }; 		
 					    	$.ajax({
 							    type: "POST",
@@ -125,14 +127,32 @@
 		</script>   	   
 	</head>
 	<body >
-	 	<header>
-        <!-- <div class="container">
-            <div class="intro-text">
-                <div class="intro-lead-in" style="font-family: forte;">Food DEPARTMENT</div>
-                <div class="intro-heading">Welcome...</div>
-              
-             </div>
-        </div> -->
-    	</header>		
+		<button id='user_id' value=<%=user_id%> style="display: none;">
+		<nav id="mainNav" class="navbar navbar-default navbar-custom navbar-fixed-top">
+        	<div class="container">            
+            	<div class="navbar-header page-scroll">
+                	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    	<span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                	</button>
+                	<a class="navbar-brand page-scroll" href="/dashboard">Home</a>
+            	</div>           
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                        	<a href="/products_display"> Products </a>
+                        </li>                                     
+                        <li>
+                            <a href="/cart_items"> YourCart</a>                           
+                        </li>
+                        <li>
+                          <a href="/yourorders">Your Orders</a>
+                        </li> 
+                        <li>
+                            <a href="/logout">Log Out </a>                            
+                        </li>                      
+                    </ul>
+                </div>            
+            </div>        
+        </nav>	 	
 	</body>
 </html>

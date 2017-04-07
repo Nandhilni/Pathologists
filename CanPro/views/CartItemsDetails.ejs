@@ -1,5 +1,15 @@
 <html>
 	<head>
+		<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">   
+	    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+	    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+	    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+	    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>	  
+	    <link href="css/bootstrap.min.css" rel="stylesheet">
+	    <link href="css/agency.min.css" rel="stylesheet">
+	    <link href="css/agency.css" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<link href="css/CartItemsStyle.css" rel="stylesheet">
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
@@ -10,18 +20,30 @@
 				// buttonTag.setAttribute('id',"user_id");
 				// buttonTag.setAttribute('value',"<%=user_id%>");
 				// button.setAttribute('style',"display: none;");
+				var userid=document.getElementById('user_id').value;
 				$.ajax({ 
 					type: "GET",
 					contentType: 'application/json',
-					url: "http://localhost:3000/cart_items",
-					success: function(data){							
+					url: "http://localhost:3000/cart_items?user_id="+userid,
+					success: function(data){	
+					console.log('======='+data+'#===============');
+					if(data=='')
+					{
+						console.log("data is NULL");
+						var divTag=document.createElement('div');
+						var divText=document.createTextNode("You have not added any items to your cart !!!");
+						divTag.appendChild(divText);
+						divTag.setAttribute('style',"font-family:forte;font-size:50px;");
+						document.body.appendChild(divTag);
+					}	
+					else
+					{					
 						var parentDiv=document.createElement('div');						
 						for(var i=0;i<data.length;i++)
 						{
-							var childDivTag=document.createElement('div');
-							childDivTag.setAttribute('class',"col-md-3 col-sm-4 col-xs-6");
+							var childDivTag=document.createElement('div');					
 							var childPTag=document.createElement('p');
-							var fontTag=document.createElement('font');												
+							var fontTag=document.createElement('font');						
 							var childText=document.createTextNode(data[i].product_name+"    "+data[i].price);
 							var imgTag = document.createElement('img');
 							imgTag.setAttribute('src',data[i].image_url);
@@ -41,7 +63,8 @@
 						orderButton.setAttribute('onClick',"confirmOrder("+JsonData+")");
 						parentDiv.appendChild(orderButton);
 						document.body.appendChild(parentDiv); 
-					},
+					}
+				   },
 					error: function(data)
 					{
 						console.log(data);
@@ -72,10 +95,10 @@
 		</script>
 		 <script type="text/javascript">		 
 			function confirmOrder(data)
-			{   
+			{   console.log(data);
 				var sum=0;
 				for(var i=0;i<data.length;i++)
-				{  
+				{   
 					var price=data[i].price.split(".")
 					sum+=parseInt(price[1]);
 				}	
@@ -157,10 +180,11 @@
           }
 			function removeCartItems()
 			{
+				var userID=document.getElementById('user_id').value;
 				$.ajax({ 						
 				    type: "DELETE",
 					contentType: 'application/json',
-					url:"http://localhost:3000/cart_items/truncate",					
+					url:"http://localhost:3000/cart_items/truncate?user_id="+userID,		
 					success: function(data){
 						window.location.href=""				
 					}
@@ -170,5 +194,35 @@
 	</head>
 	<body>
 		<button id='user_id' value=<%=user_id%> style="display: none;">
+		<nav id="mainNav" class="navbar navbar-default navbar-custom navbar-fixed-top">
+        	<div class="container">            
+            	<div class="navbar-header page-scroll">
+                	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    	<span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                	</button>
+                	<a class="navbar-brand page-scroll" href="/dashboard">Home</a>
+            	</div>           
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                        	<a href="/products_display"> Products </a>
+                        </li>                                     
+                        <li>
+                          <a href="/yourorders">Your Orders</a>
+                        </li> 
+                        <li>
+                            <a href="/logout">Log Out </a>                            
+                        </li>                      
+                    </ul>
+                </div>            
+            </div>        
+        </nav>
+		<div>		  		   		
+          <span class="fa-stack fa-4x">
+                    <i class="fa fa-circle fa-stack-2x text-primary"></i>                    
+                    <i class="fa fa-shopping-cart fa-stack-1x fa-inverse"></i>                                         
+           </span>
+           <p style="display:inline;font-family:forte;font-size:20px">Your Cart Items</p>
+        </div> 
 	</body>
 </html>			

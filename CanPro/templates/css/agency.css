@@ -7,6 +7,9 @@ body {
   overflow-x: hidden;
   font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+.paddingStyle{
+  padding-top: 9px;
+}
 /*grey*/
 .text-muted {
   color: #777777;

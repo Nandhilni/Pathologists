@@ -6,6 +6,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link href="css/myStyle.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script> 
     <script>
         $(document).ready(function(){     
         $('#login-form-link').click(function(e) {
@@ -47,10 +49,15 @@
         username=$("#newusername").val();
         email=$("#email").val();        
         pass=$("#fresh").val();
+        gender=$("#gender").val();
+        city = $("#city").val();
+        state = $("#state").val();
+        nationality = $("#nationality").val();
         $.ajax({
               url: "/encryptPassword",
               data:{
-                password:pass
+                password:pass,
+                username : username
               },
               success:function(data)
               { 
@@ -59,7 +66,11 @@
                 var JSONObject = {
                     'email':email,
                     'encrypted_password':pass,
-                    'username':username
+                    'username':username,
+                    'gender':gender,
+                    'city':city,
+                    'state':state,
+                    'nationality':nationality
                 };
                 $.ajax({
                                     type: "POST",
@@ -97,16 +108,17 @@
     <script type="text/javascript">
     function handleLogin()
     {   console.log('entered into functino');
-        var username = document.getElementById("emailid").value;
-        alert(username);
-        var password = document.getElementById("password").value; 
-        alert(password);       
-
+        var username = document.getElementById("emailid").value;        
+        var password = document.getElementById("password").value;      
         $.ajax({ 
                     type: "GET",
                     contentType: 'application/json',
                     url: "http://localhost:3000/users/getUserByEmail?email="+username,
                    success: function(data){  
+                           if(data==null)
+                           {
+                              toastr.warning('Invalid Username' );
+                           }
                            $.ajax({
                               url: "/encryptPassword",
                               data:{
@@ -119,12 +131,15 @@
                                   
                                   window.location.href = "http://localhost:4000/dashboard?user_id="+data.id;
                                 }
-                              }
+                                else{
+                                  toastr.warning('Invalid Password' );
+                                }
+                              },
                           });                          
                   },
                     error:function(data)
                     {
-                        alert(data);
+                        alert('data');
                     }
                 });
     }
@@ -213,6 +228,19 @@
                                     <div class="form-group">
                                         <input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
                                     </div>
+                                    <div class="form-group">
+                                        <input type="text" name="gender" id="gender" tabindex="2" class="gender" placeholder="Gender">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="city" id="city" tabindex="2" class="city" placeholder="City">
+                                    </div>                                    
+                                    <div class="form-group">
+                                        <input type="text" name="state" id="state" tabindex="2" class="state" placeholder="State">
+                                    </div>                                                      
+                                    <div class="form-group">
+                                        <input type="text" name="nationality" id="nationality" tabindex="2" class="nationality" placeholder="Nationality">
+                                    </div>
+
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-sm-6 col-sm-offset-3">

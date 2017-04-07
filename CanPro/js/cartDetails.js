@@ -1,8 +1,8 @@
 'use strict';
 var Array = require('node-array');
 var crypto = require('crypto');
-const secret = 'keytoencrypt';
 var selectedItems = [];
+var key = 'thisisthekeyusedtoencrypt';
 function addElement (req, res) {
 	console.log("in server");
 	selectedItems.push(req.query.selectedItem);
@@ -14,11 +14,12 @@ function displayCart(req,res)
 }
 function encrypt(req, res)
 {
-var hash = crypto.createHmac('sha256', secret)
-                   .update('req.query.pass')
-                   .digest('hex');
-console.log(hash);
-return res.status(200).send(hash);
+	var text = req.query.password;
+	var key = 'thisisthestring';
+	var cipher = crypto.createCipher('aes-256-cbc', key);
+	        var crypted = cipher.update(text, 'utf-8', 'hex');
+	        crypted += cipher.final('hex');
+	  return res.status(200).send(crypted);
 }
 module.exports = {
   addElement,

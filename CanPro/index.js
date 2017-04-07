@@ -6,7 +6,7 @@ var flag=0;
 //var morgan = require('morgan');
 var app = express();
 app.use(cookieParser());
-app.set(' engine','ejs');
+app.set('view engine','ejs');
 app.use(session({secret:'checkingthepassword',saveUninitialized:true,resave:true}));
 var CartDetails = require('./js/cartDetails');
 app.use(express.static(__dirname + '/templates'));
@@ -15,7 +15,9 @@ app.get('/', function (req, res) {
 });
 app.get('/veg_display', function (req, res) { 
 if(req.session.user_id){		
-   res.render('fooddisplay.ejs');
+   res.render('fooddisplay.ejs', {
+	        user_id : req.session.user_id 
+	     });
 }
 });
 app.get('/cart_items', function (req, res) { 
@@ -35,22 +37,41 @@ app.get('/products_display', function (req, res) {
 app.get('/encryptPassword', CartDetails.encrypt);
 
 app.get('/dashboard', function (req, res) { 
+	console.log('================');
+	console.log(flag);
 	if(flag==0)
 	{ 
-	req.session.user_id = req.query.user_id;
-	flag=1;
-	}	
+	if(req.query.user_id!=null)
+	{   console.log("jwkrtswadl");
+		req.session.user_id = req.query.user_id;
+	    flag=1;
+	}
+	else{
+		console.log("khavz");
+		flag=0;
+	}}	
 	console.log(req.session.user_id);
-	if(req.session.user_id){
+	if(req.session.user_id ){
 		 res.render('dashboard.ejs', {
 	        user_id : req.session.user_id 
 	     });
 	}
+	else
+	{		
+		res.redirect('/');
+	 } 
  //res.render('/dashboard.ejs');
 });
 app.get('/display', function (req, res) {
 	if(req.session.user_id){
 	res.render('homepage.ejs');
+}
+});
+app.get('/yourorders', function (req, res) {
+	if(req.session.user_id){
+	res.render('yourorders.ejs',{
+	        user_id : req.session.user_id 
+	     });
 }
 });
 app.get('/food_display', function (req, res) {
@@ -64,6 +85,7 @@ req.session.destroy(function(err) {
   if(err) {
     console.log(err);
   } else {
+  	flag=0;
     res.redirect('/');
   }
 });
